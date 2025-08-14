@@ -28,7 +28,7 @@ export function CapacityChart({ capacityData }: CapacityChartProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <TrendingUp className="h-5 w-5" />
-          Department Capacity Overview
+          Work Center Capacity Overview
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">

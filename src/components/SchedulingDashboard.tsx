@@ -7,6 +7,8 @@ import { WorkOrderCard } from './WorkOrderCard';
 import { CapacityChart } from './CapacityChart';
 import { CalendarView } from './CalendarView';
 import { Navigation } from './Navigation';
+import { WorkCenters } from './WorkCenters';
+import { Manpower } from './Manpower';
 import { useScheduling } from '@/hooks/useScheduling';
 import { CalendarDays, Package, AlertTriangle, CheckCircle2 } from 'lucide-react';
 
@@ -157,10 +159,12 @@ export function SchedulingDashboard() {
 
         {/* Main Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full lg:w-auto lg:grid-cols-4">
+          <TabsList className="grid w-full lg:w-auto lg:grid-cols-6">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="workorders">Work Orders</TabsTrigger>
             <TabsTrigger value="capacity">Capacity Planning</TabsTrigger>
+            <TabsTrigger value="workcenters">Work Centers</TabsTrigger>
+            <TabsTrigger value="manpower">Manpower</TabsTrigger>
             <TabsTrigger value="calendar">Calendar View</TabsTrigger>
           </TabsList>
 
@@ -250,6 +254,14 @@ export function SchedulingDashboard() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="workcenters" className="space-y-6">
+            <WorkCenters selectedDepartment={selectedDepartment} />
+          </TabsContent>
+
+          <TabsContent value="manpower" className="space-y-6">
+            <Manpower selectedDepartment={selectedDepartment} />
           </TabsContent>
 
           <TabsContent value="calendar" className="space-y-6">
