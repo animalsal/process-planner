@@ -135,17 +135,30 @@ export function CalendarView({ dailySchedules }: CalendarViewProps) {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <div className={cn(
-                          "w-full h-full p-2 rounded-lg border-2 border-transparent hover:border-primary cursor-pointer transition-colors",
+                          "w-full h-full p-1 rounded-lg border-2 border-transparent hover:border-primary cursor-pointer transition-colors flex flex-col justify-between",
                           getUtilizationColor(daySchedule.variance, daySchedule.scheduledHours)
                         )}>
                           <div className="text-sm font-medium text-white">
                             {getDayOfMonth(daySchedule.date)}
                           </div>
-                          {daySchedule.scheduledHours > 0 && (
-                            <div className="text-xs text-white/80 mt-1">
-                              {daySchedule.scheduledHours.toFixed(1)}h
+                          <div className="text-xs text-white/90 space-y-0.5">
+                            <div className="flex justify-between">
+                              <span>S:</span>
+                              <span>{daySchedule.scheduledHours.toFixed(1)}h</span>
                             </div>
-                          )}
+                            <div className="flex justify-between">
+                              <span>A:</span>
+                              <span>{daySchedule.availableHours.toFixed(1)}h</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>V:</span>
+                              <span className={cn(
+                                daySchedule.variance >= 0 ? "text-green-200" : "text-red-200"
+                              )}>
+                                {daySchedule.variance >= 0 ? '+' : ''}{daySchedule.variance.toFixed(1)}h
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       </TooltipTrigger>
                       <TooltipContent className="max-w-sm p-4" side="top">
