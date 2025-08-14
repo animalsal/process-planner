@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Calendar, CalendarDays, Clock, TrendingUp, TrendingDown } from 'lucide-react';
 import { DailySchedule } from '@/hooks/useScheduling';
 import { cn } from '@/lib/utils';
@@ -72,8 +72,7 @@ export function CalendarView({ dailySchedules }: CalendarViewProps) {
   }
 
   return (
-    <TooltipProvider>
-      <Card className="shadow-card">
+    <Card className="shadow-card">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
@@ -234,6 +233,5 @@ export function CalendarView({ dailySchedules }: CalendarViewProps) {
           </div>
         </CardContent>
       </Card>
-    </TooltipProvider>
   );
 }
