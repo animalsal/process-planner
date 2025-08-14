@@ -8,10 +8,12 @@ import { CapacityChart } from './CapacityChart';
 import { CalendarView } from './CalendarView';
 import { Navigation } from './Navigation';
 import { useScheduling } from '@/hooks/useScheduling';
-import { CalendarDays, Package, AlertTriangle, CheckCircle2, Plus } from 'lucide-react';
+import { CalendarDays, Package, AlertTriangle, CheckCircle2 } from 'lucide-react';
+
+const departments = ['Fire-ex', 'Firex-TX', 'Oxygen', 'Oxygen-TX', 'Survival', 'Survival-TX'];
 
 export function SchedulingDashboard() {
-  const { workOrders, capacityData, scheduleWorkOrders, getDailySchedules, updateWorkOrderStatus } = useScheduling();
+  const { workOrders, capacityData, scheduleWorkOrders, getDailySchedules, updateWorkOrderStatus, selectedDepartment, setSelectedDepartment } = useScheduling();
   const [activeTab, setActiveTab] = useState('overview');
 
   const scheduledResults = scheduleWorkOrders();
@@ -43,10 +45,25 @@ export function SchedulingDashboard() {
               </p>
             </div>
           </div>
-          <Button className="bg-gradient-primary text-primary-foreground shadow-elevated">
-            <Plus className="h-4 w-4 mr-2" />
-            New Work Order
-          </Button>
+        </div>
+
+        {/* Department Filter Tabs */}
+        <div className="border-b border-border">
+          <div className="flex space-x-8">
+            {departments.map((dept) => (
+              <button
+                key={dept}
+                onClick={() => setSelectedDepartment(dept)}
+                className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${
+                  selectedDepartment === dept
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                }`}
+              >
+                {dept}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Key Metrics */}

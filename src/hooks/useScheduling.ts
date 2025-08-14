@@ -36,6 +36,7 @@ const sampleWorkOrders: WorkOrder[] = [
     description: 'Complete engine block assembly for Model X200',
     priority: 'high',
     status: 'pending',
+    department: 'Fire-ex',
     totalHours: 45,
     createdAt: new Date(),
     dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days from now
@@ -50,13 +51,14 @@ const sampleWorkOrders: WorkOrder[] = [
   {
     id: '2',
     workOrderNumber: 'WO-2024-002',
-    repairOrderNumber: 'RO-HM-321',
-    customerName: 'Industrial Solutions Ltd',
-    title: 'Transmission Rebuild',
-    description: 'Rebuild transmission unit for heavy machinery',
+    repairOrderNumber: 'RO-Y150-132',
+    customerName: 'Global Aerospace Corp',
+    title: 'Turbine Housing Repair',
+    description: 'Critical repair of turbine housing for emergency flight systems',
     priority: 'urgent',
     status: 'pending',
-    totalHours: 32,
+    department: 'Firex-TX',
+    totalHours: 72,
     createdAt: new Date(),
     dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
     steps: [
@@ -69,13 +71,14 @@ const sampleWorkOrders: WorkOrder[] = [
   {
     id: '3',
     workOrderNumber: 'WO-2024-003',
-    repairOrderNumber: 'RO-CB-789',
-    customerName: 'Custom Fabrication Co',
-    title: 'Custom Bracket Fabrication',
-    description: 'Custom mounting brackets for client specification',
+    repairOrderNumber: 'RO-Z300-789',
+    customerName: 'TechFlow Industries',
+    title: 'Pressure Valve Overhaul',
+    description: 'Complete overhaul of pressure valve system',
     priority: 'medium',
     status: 'in_progress',
-    totalHours: 18,
+    department: 'Oxygen',
+    totalHours: 28,
     createdAt: new Date(),
     dueDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000), // 10 days from now
     steps: [
@@ -88,13 +91,14 @@ const sampleWorkOrders: WorkOrder[] = [
   {
     id: '4',
     workOrderNumber: 'WO-2024-004',
-    repairOrderNumber: 'RO-PS-456',
-    customerName: 'PowerSystems Corp',
-    title: 'Hydraulic Pump Overhaul',
-    description: 'Complete overhaul of industrial hydraulic pump',
+    repairOrderNumber: 'RO-A100-456',
+    customerName: 'Marine Solutions Ltd',
+    title: 'Hydraulic System Rebuild',
+    description: 'Complete rebuild of hydraulic control system for offshore platform',
     priority: 'urgent',
     status: 'pending',
-    totalHours: 52,
+    department: 'Oxygen-TX',
+    totalHours: 96,
     createdAt: new Date(),
     dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
     steps: [
@@ -108,13 +112,14 @@ const sampleWorkOrders: WorkOrder[] = [
   {
     id: '5',
     workOrderNumber: 'WO-2024-005',
-    repairOrderNumber: 'RO-MG-123',
-    customerName: 'Metro Global',
-    title: 'Gearbox Repair',
-    description: 'Emergency repair of main gearbox assembly',
+    repairOrderNumber: 'RO-B250-883',
+    customerName: 'PowerGen Systems',
+    title: 'Generator Control Module',
+    description: 'Replace and calibrate generator control module for backup power system',
     priority: 'urgent',
     status: 'pending',
-    totalHours: 38,
+    department: 'Survival',
+    totalHours: 42,
     createdAt: new Date(),
     dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
     steps: [
@@ -134,6 +139,7 @@ const sampleWorkOrders: WorkOrder[] = [
     description: 'Batch production of industrial valves',
     priority: 'high',
     status: 'pending',
+    department: 'Survival-TX',
     totalHours: 64,
     createdAt: new Date(),
     dueDate: new Date(Date.now() + 12 * 24 * 60 * 60 * 1000),
@@ -154,6 +160,7 @@ const sampleWorkOrders: WorkOrder[] = [
     description: 'Seasonal harvester equipment repairs',
     priority: 'high',
     status: 'pending',
+    department: 'Fire-ex',
     totalHours: 42,
     createdAt: new Date(),
     dueDate: new Date(Date.now() + 8 * 24 * 60 * 60 * 1000),
@@ -174,6 +181,7 @@ const sampleWorkOrders: WorkOrder[] = [
     description: 'Complete marine engine overhaul and rebuild',
     priority: 'medium',
     status: 'pending',
+    department: 'Firex-TX',
     totalHours: 78,
     createdAt: new Date(),
     dueDate: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000),
@@ -194,6 +202,7 @@ const sampleWorkOrders: WorkOrder[] = [
     description: 'Heavy-duty excavator arm manufacturing',
     priority: 'medium',
     status: 'pending',
+    department: 'Oxygen',
     totalHours: 56,
     createdAt: new Date(),
     dueDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
@@ -214,6 +223,7 @@ const sampleWorkOrders: WorkOrder[] = [
     description: 'Wind turbine blade structural repairs',
     priority: 'high',
     status: 'pending',
+    department: 'Oxygen-TX',
     totalHours: 48,
     createdAt: new Date(),
     dueDate: new Date(Date.now() + 9 * 24 * 60 * 60 * 1000),
@@ -234,6 +244,7 @@ const sampleWorkOrders: WorkOrder[] = [
     description: 'Precision aircraft components for commercial jets',
     priority: 'urgent',
     status: 'pending',
+    department: 'Survival',
     totalHours: 72,
     createdAt: new Date(),
     dueDate: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000),
@@ -254,6 +265,7 @@ const sampleWorkOrders: WorkOrder[] = [
     description: 'High-volume brake disc manufacturing',
     priority: 'medium',
     status: 'pending',
+    department: 'Survival-TX',
     totalHours: 36,
     createdAt: new Date(),
     dueDate: new Date(Date.now() + 16 * 24 * 60 * 60 * 1000),
@@ -273,6 +285,7 @@ const sampleWorkOrders: WorkOrder[] = [
     description: 'Oil drilling equipment maintenance and repair',
     priority: 'urgent',
     status: 'pending',
+    department: 'Fire-ex',
     totalHours: 68,
     createdAt: new Date(),
     dueDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
@@ -293,6 +306,7 @@ const sampleWorkOrders: WorkOrder[] = [
     description: 'Industrial conveyor system overhaul',
     priority: 'medium',
     status: 'pending',
+    department: 'Firex-TX',
     totalHours: 44,
     createdAt: new Date(),
     dueDate: new Date(Date.now() + 18 * 24 * 60 * 60 * 1000),
@@ -313,6 +327,7 @@ const sampleWorkOrders: WorkOrder[] = [
     description: 'Locomotive wheel assembly and balancing',
     priority: 'high',
     status: 'pending',
+    department: 'Oxygen',
     totalHours: 54,
     createdAt: new Date(),
     dueDate: new Date(Date.now() + 11 * 24 * 60 * 60 * 1000),
@@ -333,6 +348,7 @@ const sampleWorkOrders: WorkOrder[] = [
     description: 'High-volume motor housing manufacturing',
     priority: 'medium',
     status: 'pending',
+    department: 'Oxygen-TX',
     totalHours: 32,
     createdAt: new Date(),
     dueDate: new Date(Date.now() + 22 * 24 * 60 * 60 * 1000),
@@ -352,6 +368,7 @@ const sampleWorkOrders: WorkOrder[] = [
     description: 'Hydraulic cylinder rebuild for waste compactor',
     priority: 'urgent',
     status: 'pending',
+    department: 'Survival',
     totalHours: 46,
     createdAt: new Date(),
     dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
@@ -372,6 +389,7 @@ const sampleWorkOrders: WorkOrder[] = [
     description: 'Steel rolling mill roller replacement',
     priority: 'high',
     status: 'pending',
+    department: 'Survival-TX',
     totalHours: 84,
     createdAt: new Date(),
     dueDate: new Date(Date.now() + 13 * 24 * 60 * 60 * 1000),
@@ -392,6 +410,7 @@ const sampleWorkOrders: WorkOrder[] = [
     description: 'Chemical reactor pressure vessel maintenance',
     priority: 'urgent',
     status: 'pending',
+    department: 'Fire-ex',
     totalHours: 76,
     createdAt: new Date(),
     dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
@@ -412,6 +431,7 @@ const sampleWorkOrders: WorkOrder[] = [
     description: 'Heavy-duty rock crusher jaw replacement',
     priority: 'high',
     status: 'pending',
+    department: 'Firex-TX',
     totalHours: 62,
     createdAt: new Date(),
     dueDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
@@ -432,6 +452,7 @@ const sampleWorkOrders: WorkOrder[] = [
     description: 'Warehouse automation equipment repair',
     priority: 'medium',
     status: 'pending',
+    department: 'Oxygen',
     totalHours: 38,
     createdAt: new Date(),
     dueDate: new Date(Date.now() + 19 * 24 * 60 * 60 * 1000),
@@ -452,6 +473,7 @@ const sampleWorkOrders: WorkOrder[] = [
     description: 'Industrial generator rotor overhaul',
     priority: 'urgent',
     status: 'pending',
+    department: 'Oxygen-TX',
     totalHours: 88,
     createdAt: new Date(),
     dueDate: new Date(Date.now() + 8 * 24 * 60 * 60 * 1000),
@@ -472,6 +494,7 @@ const sampleWorkOrders: WorkOrder[] = [
     description: 'Industrial textile loom frame manufacturing',
     priority: 'low',
     status: 'pending',
+    department: 'Survival',
     totalHours: 34,
     createdAt: new Date(),
     dueDate: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000),
@@ -492,6 +515,7 @@ const sampleWorkOrders: WorkOrder[] = [
     description: 'Industrial packaging sealing machine overhaul',
     priority: 'medium',
     status: 'pending',
+    department: 'Survival-TX',
     totalHours: 28,
     createdAt: new Date(),
     dueDate: new Date(Date.now() + 17 * 24 * 60 * 60 * 1000),
@@ -512,6 +536,7 @@ const sampleWorkOrders: WorkOrder[] = [
     description: 'Industrial robot arm precision calibration',
     priority: 'high',
     status: 'pending',
+    department: 'Fire-ex',
     totalHours: 26,
     createdAt: new Date(),
     dueDate: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000),
@@ -527,10 +552,16 @@ const sampleWorkOrders: WorkOrder[] = [
 export function useScheduling() {
   const [workOrders, setWorkOrders] = useState<WorkOrder[]>(sampleWorkOrders);
   const [departments] = useState<Department[]>(sampleDepartments);
+  const [selectedDepartment, setSelectedDepartment] = useState<string>('Fire-ex');
+
+  // Filter work orders by selected department
+  const filteredWorkOrders = useMemo(() => {
+    return workOrders.filter(wo => wo.department === selectedDepartment);
+  }, [workOrders, selectedDepartment]);
 
   const capacityData: CapacityData[] = useMemo(() => {
     return departments.map(dept => {
-      const departmentWorkload = workOrders
+      const departmentWorkload = filteredWorkOrders
         .filter(wo => wo.status !== 'completed')
         .flatMap(wo => wo.steps.filter(step => step.departmentId === dept.id))
         .reduce((total, step) => total + step.estimatedHours, 0);
@@ -548,7 +579,7 @@ export function useScheduling() {
         backlogDays
       };
     });
-  }, [workOrders, departments]);
+  }, [filteredWorkOrders, departments]);
 
   const scheduleWorkOrders = (): SchedulingResult[] => {
     const results: SchedulingResult[] = [];
@@ -560,7 +591,7 @@ export function useScheduling() {
     });
 
     // Sort work orders by priority and creation date
-    const sortedWorkOrders = [...workOrders]
+    const sortedWorkOrders = [...filteredWorkOrders]
       .filter(wo => wo.status === 'pending')
       .sort((a, b) => {
         const priorityOrder = { urgent: 4, high: 3, medium: 2, low: 1 };
@@ -643,7 +674,7 @@ export function useScheduling() {
 
     // Add scheduled work to each day
     scheduledResults.forEach(result => {
-      const workOrder = workOrders.find(wo => wo.id === result.workOrderId);
+      const workOrder = filteredWorkOrders.find(wo => wo.id === result.workOrderId);
       if (!workOrder) return;
 
       result.stepSchedules.forEach(stepSchedule => {
@@ -703,13 +734,16 @@ export function useScheduling() {
   };
 
   return {
-    workOrders,
+    workOrders: filteredWorkOrders,
+    allWorkOrders: workOrders,
     departments,
     capacityData,
     scheduleWorkOrders,
     getDailySchedules,
     addWorkOrder,
     updateWorkOrderStatus,
-    updateWorkOrder
+    updateWorkOrder,
+    selectedDepartment,
+    setSelectedDepartment
   };
 }
