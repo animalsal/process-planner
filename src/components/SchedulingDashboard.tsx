@@ -5,14 +5,16 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { WorkOrderCard } from './WorkOrderCard';
 import { CapacityChart } from './CapacityChart';
+import { CalendarView } from './CalendarView';
 import { useScheduling } from '@/hooks/useScheduling';
 import { CalendarDays, Package, AlertTriangle, CheckCircle2, Plus } from 'lucide-react';
 
 export function SchedulingDashboard() {
-  const { workOrders, capacityData, scheduleWorkOrders, updateWorkOrderStatus } = useScheduling();
+  const { workOrders, capacityData, scheduleWorkOrders, getDailySchedules, updateWorkOrderStatus } = useScheduling();
   const [activeTab, setActiveTab] = useState('overview');
 
   const scheduledResults = scheduleWorkOrders();
+  const dailySchedules = getDailySchedules();
   
   const stats = {
     total: workOrders.length,
@@ -134,10 +136,11 @@ export function SchedulingDashboard() {
 
         {/* Main Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full lg:w-auto lg:grid-cols-3">
+          <TabsList className="grid w-full lg:w-auto lg:grid-cols-4">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="workorders">Work Orders</TabsTrigger>
             <TabsTrigger value="capacity">Capacity Planning</TabsTrigger>
+            <TabsTrigger value="calendar">Calendar View</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -226,6 +229,10 @@ export function SchedulingDashboard() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="calendar" className="space-y-6">
+            <CalendarView dailySchedules={dailySchedules} />
           </TabsContent>
         </Tabs>
       </div>

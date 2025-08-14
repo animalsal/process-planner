@@ -1,6 +1,21 @@
 import { useState, useMemo } from 'react';
 import { WorkOrder, Department, CapacityData, SchedulingResult } from '@/types/scheduling';
 
+export interface DailySchedule {
+  date: string; // YYYY-MM-DD format
+  scheduledHours: number;
+  availableHours: number;
+  variance: number;
+  workOrderSteps: {
+    workOrderId: string;
+    workOrderTitle: string;
+    stepName: string;
+    departmentName: string;
+    hours: number;
+    priority: WorkOrder['priority'];
+  }[];
+}
+
 // Sample departments data
 const sampleDepartments: Department[] = [
   { id: '1', name: 'Machining', totalCapacityHours: 160, availableHours: 160 },
@@ -153,6 +168,70 @@ export function useScheduling() {
     return results;
   };
 
+  const getDailySchedules = (): DailySchedule[] => {
+    const scheduledResults = scheduleWorkOrders();
+    const dailySchedules = new Map<string, DailySchedule>();
+    
+    // Initialize next 30 days
+    for (let i = 0; i < 30; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() + i);
+      const dateKey = date.toISOString().split('T')[0];
+      
+      // Calculate total available hours per day across all departments
+      const totalAvailableHours = departments.reduce((sum, dept) => {
+        return sum + (dept.totalCapacityHours / 5); // 5 working days per week
+      }, 0);
+      
+      dailySchedules.set(dateKey, {
+        date: dateKey,
+        scheduledHours: 0,
+        availableHours: totalAvailableHours,
+        variance: totalAvailableHours,
+        workOrderSteps: []
+      });
+    }
+
+    // Add scheduled work to each day
+    scheduledResults.forEach(result => {
+      const workOrder = workOrders.find(wo => wo.id === result.workOrderId);
+      if (!workOrder) return;
+
+      result.stepSchedules.forEach(stepSchedule => {
+        const step = workOrder.steps.find(s => s.id === stepSchedule.stepId);
+        const department = departments.find(d => d.id === step?.departmentId);
+        if (!step || !department) return;
+
+        // Distribute hours across the step's duration
+        const stepDays = stepSchedule.days;
+        const hoursPerDay = step.estimatedHours / stepDays;
+        
+        for (let i = 0; i < stepDays; i++) {
+          const currentDate = new Date(stepSchedule.startDate);
+          currentDate.setDate(currentDate.getDate() + i);
+          const dateKey = currentDate.toISOString().split('T')[0];
+          
+          const daySchedule = dailySchedules.get(dateKey);
+          if (daySchedule) {
+            daySchedule.scheduledHours += hoursPerDay;
+            daySchedule.variance = daySchedule.availableHours - daySchedule.scheduledHours;
+            
+            daySchedule.workOrderSteps.push({
+              workOrderId: workOrder.id,
+              workOrderTitle: workOrder.title,
+              stepName: step.name,
+              departmentName: department.name,
+              hours: hoursPerDay,
+              priority: workOrder.priority
+            });
+          }
+        }
+      });
+    });
+
+    return Array.from(dailySchedules.values()).sort((a, b) => a.date.localeCompare(b.date));
+  };
+
   const addWorkOrder = (workOrder: Omit<WorkOrder, 'id' | 'createdAt'>) => {
     const newWorkOrder: WorkOrder = {
       ...workOrder,
@@ -173,6 +252,7 @@ export function useScheduling() {
     departments,
     capacityData,
     scheduleWorkOrders,
+    getDailySchedules,
     addWorkOrder,
     updateWorkOrderStatus
   };
