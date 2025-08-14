@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { WorkOrderCard } from './WorkOrderCard';
 import { CapacityChart } from './CapacityChart';
 import { CalendarView } from './CalendarView';
+import { Navigation } from './Navigation';
 import { useScheduling } from '@/hooks/useScheduling';
 import { CalendarDays, Package, AlertTriangle, CheckCircle2, Plus } from 'lucide-react';
 
@@ -31,13 +32,16 @@ export function SchedulingDashboard() {
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              Production Scheduling & Capacity Planning
-            </h1>
-            <p className="text-muted-foreground mt-1">
-              Manage work orders and optimize resource allocation
-            </p>
+          <div className="flex items-center space-x-8">
+            <Navigation />
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                Production Scheduling & Capacity Planning
+              </h1>
+              <p className="text-muted-foreground mt-1">
+                Manage work orders and optimize resource allocation
+              </p>
+            </div>
           </div>
           <Button className="bg-gradient-primary text-primary-foreground shadow-elevated">
             <Plus className="h-4 w-4 mr-2" />

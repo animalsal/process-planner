@@ -15,12 +15,16 @@ export interface ProcessStep {
 
 export interface WorkOrder {
   id: string;
+  workOrderNumber: string;
+  repairOrderNumber: string;
+  customerName: string;
   title: string;
   description?: string;
   priority: 'low' | 'medium' | 'high' | 'urgent';
   status: 'pending' | 'in_progress' | 'completed' | 'on_hold';
   steps: ProcessStep[];
   createdAt: Date;
+  dueDate?: Date;
   scheduledStartDate?: Date;
   estimatedCompletionDate?: Date;
   actualCompletionDate?: Date;

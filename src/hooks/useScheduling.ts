@@ -29,12 +29,16 @@ const sampleDepartments: Department[] = [
 const sampleWorkOrders: WorkOrder[] = [
   {
     id: '1',
+    workOrderNumber: 'WO-2024-001',
+    repairOrderNumber: 'RO-X200-045',
+    customerName: 'Acme Manufacturing',
     title: 'Engine Block Assembly',
     description: 'Complete engine block assembly for Model X200',
     priority: 'high',
     status: 'pending',
     totalHours: 45,
     createdAt: new Date(),
+    dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days from now
     steps: [
       { id: '1-1', name: 'Raw Material Prep', departmentId: '1', estimatedHours: 8, order: 1 },
       { id: '1-2', name: 'Machining Operations', departmentId: '1', estimatedHours: 16, order: 2 },
@@ -45,12 +49,16 @@ const sampleWorkOrders: WorkOrder[] = [
   },
   {
     id: '2',
+    workOrderNumber: 'WO-2024-002',
+    repairOrderNumber: 'RO-HM-321',
+    customerName: 'Industrial Solutions Ltd',
     title: 'Transmission Rebuild',
     description: 'Rebuild transmission unit for heavy machinery',
     priority: 'urgent',
     status: 'pending',
     totalHours: 32,
     createdAt: new Date(),
+    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
     steps: [
       { id: '2-1', name: 'Disassembly', departmentId: '1', estimatedHours: 4, order: 1 },
       { id: '2-2', name: 'Component Machining', departmentId: '1', estimatedHours: 12, order: 2 },
@@ -60,12 +68,16 @@ const sampleWorkOrders: WorkOrder[] = [
   },
   {
     id: '3',
+    workOrderNumber: 'WO-2024-003',
+    repairOrderNumber: 'RO-CB-789',
+    customerName: 'Custom Fabrication Co',
     title: 'Custom Bracket Fabrication',
     description: 'Custom mounting brackets for client specification',
     priority: 'medium',
     status: 'in_progress',
     totalHours: 18,
     createdAt: new Date(),
+    dueDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000), // 10 days from now
     steps: [
       { id: '3-1', name: 'Material Cutting', departmentId: '1', estimatedHours: 3, order: 1 },
       { id: '3-2', name: 'Welding', departmentId: '4', estimatedHours: 8, order: 2 },
@@ -247,6 +259,12 @@ export function useScheduling() {
     ));
   };
 
+  const updateWorkOrder = (id: string, updates: Partial<WorkOrder>) => {
+    setWorkOrders(prev => prev.map(wo => 
+      wo.id === id ? { ...wo, ...updates } : wo
+    ));
+  };
+
   return {
     workOrders,
     departments,
@@ -254,6 +272,7 @@ export function useScheduling() {
     scheduleWorkOrders,
     getDailySchedules,
     addWorkOrder,
-    updateWorkOrderStatus
+    updateWorkOrderStatus,
+    updateWorkOrder
   };
 }
