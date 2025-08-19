@@ -8,14 +8,19 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Checkbox } from '@/components/ui/checkbox';
 import { CalendarIcon, Save } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 export function WorkOrdersTable() {
   const { workOrders, scheduleWorkOrders, updateWorkOrder } = useScheduling();
+  const { toast } = useToast();
   const [editingRow, setEditingRow] = useState<string | null>(null);
   const [editData, setEditData] = useState<Partial<WorkOrder>>({});
+  const [selectedWorkOrders, setSelectedWorkOrders] = useState<Set<string>>(new Set());
+  const [massUpdateData, setMassUpdateData] = useState<Partial<WorkOrder>>({});
 
   const scheduledResults = scheduleWorkOrders();
   
@@ -40,6 +45,62 @@ export function WorkOrdersTable() {
   const handleCancel = () => {
     setEditingRow(null);
     setEditData({});
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedWorkOrders(new Set(workOrders.map(wo => wo.id)));
+    } else {
+      setSelectedWorkOrders(new Set());
+    }
+  };
+
+  const handleSelectWorkOrder = (workOrderId: string, checked: boolean) => {
+    const newSelected = new Set(selectedWorkOrders);
+    if (checked) {
+      newSelected.add(workOrderId);
+    } else {
+      newSelected.delete(workOrderId);
+    }
+    setSelectedWorkOrders(newSelected);
+  };
+
+  const handleMassUpdate = () => {
+    if (selectedWorkOrders.size === 0) {
+      toast({
+        title: "No work orders selected",
+        description: "Please select work orders to update.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const updates: Partial<WorkOrder> = {};
+    if (massUpdateData.priority) updates.priority = massUpdateData.priority;
+    if (massUpdateData.workType) updates.workType = massUpdateData.workType;
+    if (massUpdateData.dueDate) updates.dueDate = massUpdateData.dueDate;
+    if (massUpdateData.scheduledDate) updates.scheduledDate = massUpdateData.scheduledDate;
+
+    if (Object.keys(updates).length === 0) {
+      toast({
+        title: "No updates specified",
+        description: "Please specify at least one field to update.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    selectedWorkOrders.forEach(workOrderId => {
+      updateWorkOrder(workOrderId, updates);
+    });
+
+    toast({
+      title: "Mass update completed",
+      description: `Updated ${selectedWorkOrders.size} work orders successfully.`
+    });
+
+    setSelectedWorkOrders(new Set());
+    setMassUpdateData({});
   };
 
   const getPriorityColor = (priority: WorkOrder['priority']) => {
@@ -68,10 +129,110 @@ export function WorkOrdersTable() {
         <CardTitle>All Work Orders</CardTitle>
       </CardHeader>
       <CardContent>
+        {/* Mass Update Controls */}
+        {selectedWorkOrders.size > 0 && (
+          <div className="mb-6 p-4 border border-border rounded-lg bg-accent/50">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-medium">Mass Update ({selectedWorkOrders.size} selected)</h3>
+              <Button variant="outline" onClick={() => setSelectedWorkOrders(new Set())}>
+                Clear Selection
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Priority</label>
+                <Select
+                  value={massUpdateData.priority || ''}
+                  onValueChange={(value) => setMassUpdateData({...massUpdateData, priority: value as WorkOrder['priority']})}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select priority" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background z-50">
+                    <SelectItem value="urgent">Urgent</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="low">Low</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Work Type</label>
+                <Select
+                  value={massUpdateData.workType || ''}
+                  onValueChange={(value) => setMassUpdateData({...massUpdateData, workType: value as WorkOrder['workType']})}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select work type" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background z-50">
+                    <SelectItem value="contractual">Contractual</SelectItem>
+                    <SelectItem value="non-contract">Non-Contract</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Due Date</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="w-full justify-start text-left font-normal">
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {massUpdateData.dueDate ? format(massUpdateData.dueDate, 'MMM dd, yyyy') : 'Set due date'}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={massUpdateData.dueDate}
+                      onSelect={(date) => setMassUpdateData({...massUpdateData, dueDate: date})}
+                      initialFocus
+                      className={cn("p-3 pointer-events-auto")}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Scheduled Date</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="w-full justify-start text-left font-normal">
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {massUpdateData.scheduledDate ? format(massUpdateData.scheduledDate, 'MMM dd, yyyy') : 'Set scheduled date'}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={massUpdateData.scheduledDate}
+                      onSelect={(date) => setMassUpdateData({...massUpdateData, scheduledDate: date})}
+                      initialFocus
+                      className={cn("p-3 pointer-events-auto")}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+
+            <Button onClick={handleMassUpdate} className="w-full">
+              Apply Mass Update
+            </Button>
+          </div>
+        )}
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b">
+                <th className="text-center p-3 w-12">
+                  <Checkbox
+                    checked={selectedWorkOrders.size === workOrders.length && workOrders.length > 0}
+                    onCheckedChange={handleSelectAll}
+                    aria-label="Select all work orders"
+                  />
+                </th>
                 <th className="text-left p-3">WO #</th>
                 <th className="text-left p-3">RO #</th>
                 <th className="text-left p-3">Customer</th>
@@ -93,6 +254,13 @@ export function WorkOrdersTable() {
                 
                 return (
                   <tr key={workOrder.id} className="border-b hover:bg-accent/50">
+                    <td className="p-3 text-center">
+                      <Checkbox
+                        checked={selectedWorkOrders.has(workOrder.id)}
+                        onCheckedChange={(checked) => handleSelectWorkOrder(workOrder.id, checked as boolean)}
+                        aria-label={`Select work order ${workOrder.workOrderNumber}`}
+                      />
+                    </td>
                     <td className="p-3 font-mono text-xs">{workOrder.workOrderNumber}</td>
                     <td className="p-3 font-mono text-xs">{workOrder.repairOrderNumber}</td>
                     <td className="p-3">{workOrder.customerName}</td>
@@ -107,7 +275,7 @@ export function WorkOrdersTable() {
                           <SelectTrigger className="w-36">
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-background z-50">
                             <SelectItem value="contractual">Contractual</SelectItem>
                             <SelectItem value="non-contract">Non-Contract</SelectItem>
                           </SelectContent>
@@ -128,7 +296,7 @@ export function WorkOrdersTable() {
                           <SelectTrigger className="w-32">
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-background z-50">
                             <SelectItem value="urgent">Urgent</SelectItem>
                             <SelectItem value="high">High</SelectItem>
                             <SelectItem value="medium">Medium</SelectItem>
@@ -157,7 +325,7 @@ export function WorkOrdersTable() {
                               {editData.dueDate ? format(editData.dueDate, 'MMM dd, yyyy') : 'Set due date'}
                             </Button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
+                          <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
                             <Calendar
                               mode="single"
                               selected={editData.dueDate}
@@ -183,7 +351,7 @@ export function WorkOrdersTable() {
                               {editData.scheduledDate ? format(editData.scheduledDate, 'MMM dd, yyyy') : 'Set scheduled date'}
                             </Button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
+                          <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
                             <Calendar
                               mode="single"
                               selected={editData.scheduledDate}
