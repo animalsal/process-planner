@@ -23,9 +23,11 @@ export interface WorkOrder {
   priority: 'low' | 'medium' | 'high' | 'urgent';
   status: 'pending' | 'in_progress' | 'completed' | 'on_hold';
   department: 'Fire-ex' | 'Firex-TX' | 'Oxygen' | 'Oxygen-TX' | 'Survival' | 'Survival-TX';
+  workType: 'contractual' | 'non-contract';
   steps: ProcessStep[];
   createdAt: Date;
   dueDate?: Date;
+  scheduledDate?: Date;
   scheduledStartDate?: Date;
   estimatedCompletionDate?: Date;
   actualCompletionDate?: Date;

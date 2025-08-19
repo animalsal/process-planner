@@ -76,9 +76,11 @@ export function WorkOrdersTable() {
                 <th className="text-left p-3">RO #</th>
                 <th className="text-left p-3">Customer</th>
                 <th className="text-left p-3">Title</th>
+                <th className="text-left p-3">Work Type</th>
                 <th className="text-left p-3">Priority</th>
                 <th className="text-left p-3">Status</th>
                 <th className="text-left p-3">Due Date</th>
+                <th className="text-left p-3">Scheduled Date</th>
                 <th className="text-left p-3">Est. Completion</th>
                 <th className="text-left p-3">Total Hours</th>
                 <th className="text-center p-3">Actions</th>
@@ -95,6 +97,27 @@ export function WorkOrdersTable() {
                     <td className="p-3 font-mono text-xs">{workOrder.repairOrderNumber}</td>
                     <td className="p-3">{workOrder.customerName}</td>
                     <td className="p-3 font-medium">{workOrder.title}</td>
+                    
+                    <td className="p-3">
+                      {isEditing ? (
+                        <Select
+                          value={editData.workType}
+                          onValueChange={(value) => setEditData({...editData, workType: value as WorkOrder['workType']})}
+                        >
+                          <SelectTrigger className="w-36">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="contractual">Contractual</SelectItem>
+                            <SelectItem value="non-contract">Non-Contract</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Badge variant={workOrder.workType === 'contractual' ? 'default' : 'secondary'}>
+                          {workOrder.workType}
+                        </Badge>
+                      )}
+                    </td>
                     
                     <td className="p-3">
                       {isEditing ? (
@@ -147,6 +170,32 @@ export function WorkOrdersTable() {
                       ) : (
                         <span className={workOrder.dueDate ? '' : 'text-muted-foreground'}>
                           {workOrder.dueDate ? format(workOrder.dueDate, 'MMM dd, yyyy') : 'Not set'}
+                        </span>
+                      )}
+                    </td>
+                    
+                    <td className="p-3">
+                      {isEditing ? (
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button variant="outline" className="w-40 justify-start text-left font-normal">
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {editData.scheduledDate ? format(editData.scheduledDate, 'MMM dd, yyyy') : 'Set scheduled date'}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={editData.scheduledDate}
+                              onSelect={(date) => setEditData({...editData, scheduledDate: date})}
+                              initialFocus
+                              className={cn("p-3 pointer-events-auto")}
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      ) : (
+                        <span className={workOrder.scheduledDate ? '' : 'text-muted-foreground'}>
+                          {workOrder.scheduledDate ? format(workOrder.scheduledDate, 'MMM dd, yyyy') : 'Not set'}
                         </span>
                       )}
                     </td>
