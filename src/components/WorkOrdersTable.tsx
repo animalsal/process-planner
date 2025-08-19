@@ -77,7 +77,6 @@ export function WorkOrdersTable() {
 
     const updates: Partial<WorkOrder> = {};
     if (massUpdateData.priority) updates.priority = massUpdateData.priority;
-    if (massUpdateData.workType) updates.workType = massUpdateData.workType;
     if (massUpdateData.dueDate) updates.dueDate = massUpdateData.dueDate;
     if (massUpdateData.scheduledDate) updates.scheduledDate = massUpdateData.scheduledDate;
 
@@ -139,7 +138,7 @@ export function WorkOrdersTable() {
               </Button>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">Priority</label>
                 <Select
@@ -154,22 +153,6 @@ export function WorkOrdersTable() {
                     <SelectItem value="high">High</SelectItem>
                     <SelectItem value="medium">Medium</SelectItem>
                     <SelectItem value="low">Low</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium mb-2 block">Work Type</label>
-                <Select
-                  value={massUpdateData.workType || ''}
-                  onValueChange={(value) => setMassUpdateData({...massUpdateData, workType: value as WorkOrder['workType']})}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select work type" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-background z-50">
-                    <SelectItem value="contractual">Contractual</SelectItem>
-                    <SelectItem value="non-contract">Non-Contract</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -237,7 +220,7 @@ export function WorkOrdersTable() {
                 <th className="text-left p-3">RO #</th>
                 <th className="text-left p-3">Customer</th>
                 <th className="text-left p-3">Title</th>
-                <th className="text-left p-3">Work Type</th>
+                <th className="text-left p-3">Contracted</th>
                 <th className="text-left p-3">Priority</th>
                 <th className="text-left p-3">Status</th>
                 <th className="text-left p-3">Due Date</th>
@@ -267,24 +250,9 @@ export function WorkOrdersTable() {
                     <td className="p-3 font-medium">{workOrder.title}</td>
                     
                     <td className="p-3">
-                      {isEditing ? (
-                        <Select
-                          value={editData.workType}
-                          onValueChange={(value) => setEditData({...editData, workType: value as WorkOrder['workType']})}
-                        >
-                          <SelectTrigger className="w-36">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="bg-background z-50">
-                            <SelectItem value="contractual">Contractual</SelectItem>
-                            <SelectItem value="non-contract">Non-Contract</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <Badge variant={workOrder.workType === 'contractual' ? 'default' : 'secondary'}>
-                          {workOrder.workType}
-                        </Badge>
-                      )}
+                      <Badge variant={workOrder.workType === 'contractual' ? 'default' : 'secondary'}>
+                        {workOrder.workType === 'contractual' ? 'Yes' : 'No'}
+                      </Badge>
                     </td>
                     
                     <td className="p-3">
