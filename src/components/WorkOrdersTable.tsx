@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useScheduling } from '@/hooks/useScheduling';
 import { WorkOrder } from '@/types/scheduling';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,18 +9,96 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
-import { CalendarIcon, Save } from 'lucide-react';
+import { CalendarIcon, Save, Filter, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { useSearchParams } from 'react-router-dom';
 
 export function WorkOrdersTable() {
   const { workOrders, scheduleWorkOrders, updateWorkOrder } = useScheduling();
   const { toast } = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [editingRow, setEditingRow] = useState<string | null>(null);
   const [editData, setEditData] = useState<Partial<WorkOrder>>({});
   const [selectedWorkOrders, setSelectedWorkOrders] = useState<Set<string>>(new Set());
   const [massUpdateData, setMassUpdateData] = useState<Partial<WorkOrder>>({});
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    workOrderNumber: '',
+    customerName: '',
+    title: '',
+    priority: '',
+    status: '',
+    contracted: '',
+    scheduledDate: undefined as Date | undefined,
+    dueDate: undefined as Date | undefined
+  });
+
+  // Initialize filters from URL params
+  useEffect(() => {
+    const scheduledDateParam = searchParams.get('scheduledDate');
+    if (scheduledDateParam) {
+      setFilters(prev => ({
+        ...prev,
+        scheduledDate: new Date(scheduledDateParam)
+      }));
+      setShowFilters(true);
+    }
+  }, [searchParams]);
+
+  // Filter work orders based on current filters
+  const filteredWorkOrders = useMemo(() => {
+    return workOrders.filter(workOrder => {
+      if (filters.workOrderNumber && !workOrder.workOrderNumber.toLowerCase().includes(filters.workOrderNumber.toLowerCase())) {
+        return false;
+      }
+      if (filters.customerName && !workOrder.customerName.toLowerCase().includes(filters.customerName.toLowerCase())) {
+        return false;
+      }
+      if (filters.title && !workOrder.title.toLowerCase().includes(filters.title.toLowerCase())) {
+        return false;
+      }
+      if (filters.priority && workOrder.priority !== filters.priority) {
+        return false;
+      }
+      if (filters.status && workOrder.status !== filters.status) {
+        return false;
+      }
+      if (filters.contracted && ((filters.contracted === 'yes' && workOrder.workType !== 'contractual') || (filters.contracted === 'no' && workOrder.workType !== 'non-contract'))) {
+        return false;
+      }
+      if (filters.scheduledDate && workOrder.scheduledDate) {
+        const workOrderDate = new Date(workOrder.scheduledDate).toISOString().split('T')[0];
+        const filterDate = filters.scheduledDate.toISOString().split('T')[0];
+        if (workOrderDate !== filterDate) {
+          return false;
+        }
+      }
+      if (filters.dueDate && workOrder.dueDate) {
+        const workOrderDate = new Date(workOrder.dueDate).toISOString().split('T')[0];
+        const filterDate = filters.dueDate.toISOString().split('T')[0];
+        if (workOrderDate !== filterDate) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }, [workOrders, filters]);
+
+  const clearFilters = () => {
+    setFilters({
+      workOrderNumber: '',
+      customerName: '',
+      title: '',
+      priority: '',
+      status: '',
+      contracted: '',
+      scheduledDate: undefined,
+      dueDate: undefined
+    });
+    setSearchParams({});
+  };
 
   const scheduledResults = scheduleWorkOrders();
   
@@ -49,7 +127,7 @@ export function WorkOrdersTable() {
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedWorkOrders(new Set(workOrders.map(wo => wo.id)));
+      setSelectedWorkOrders(new Set(filteredWorkOrders.map(wo => wo.id)));
     } else {
       setSelectedWorkOrders(new Set());
     }
@@ -125,9 +203,157 @@ export function WorkOrdersTable() {
   return (
     <Card className="shadow-card">
       <CardHeader>
-        <CardTitle>All Work Orders</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>All Work Orders ({filteredWorkOrders.length})</CardTitle>
+          <Button
+            variant="outline"
+            onClick={() => setShowFilters(!showFilters)}
+            className="flex items-center gap-2"
+          >
+            <Filter className="h-4 w-4" />
+            {showFilters ? 'Hide Filters' : 'Show Filters'}
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
+        {/* Filters */}
+        {showFilters && (
+          <div className="mb-6 p-4 border border-border rounded-lg bg-accent/20">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-medium">Filters</h3>
+              <Button variant="ghost" size="sm" onClick={clearFilters}>
+                <X className="h-4 w-4 mr-2" />
+                Clear All
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Work Order #</label>
+                <Input
+                  placeholder="Search work order number"
+                  value={filters.workOrderNumber}
+                  onChange={(e) => setFilters({...filters, workOrderNumber: e.target.value})}
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Customer</label>
+                <Input
+                  placeholder="Search customer name"
+                  value={filters.customerName}
+                  onChange={(e) => setFilters({...filters, customerName: e.target.value})}
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Title</label>
+                <Input
+                  placeholder="Search title"
+                  value={filters.title}
+                  onChange={(e) => setFilters({...filters, title: e.target.value})}
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Priority</label>
+                <Select
+                  value={filters.priority}
+                  onValueChange={(value) => setFilters({...filters, priority: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="All priorities" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background z-50">
+                    <SelectItem value="">All priorities</SelectItem>
+                    <SelectItem value="urgent">Urgent</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="low">Low</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Status</label>
+                <Select
+                  value={filters.status}
+                  onValueChange={(value) => setFilters({...filters, status: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="All statuses" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background z-50">
+                    <SelectItem value="">All statuses</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="in_progress">In Progress</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                    <SelectItem value="on_hold">On Hold</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Contracted</label>
+                <Select
+                  value={filters.contracted}
+                  onValueChange={(value) => setFilters({...filters, contracted: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="All types" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background z-50">
+                    <SelectItem value="">All types</SelectItem>
+                    <SelectItem value="yes">Yes</SelectItem>
+                    <SelectItem value="no">No</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Scheduled Date</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="w-full justify-start text-left font-normal">
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {filters.scheduledDate ? format(filters.scheduledDate, 'MMM dd, yyyy') : 'All dates'}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={filters.scheduledDate}
+                      onSelect={(date) => setFilters({...filters, scheduledDate: date})}
+                      initialFocus
+                      className={cn("p-3 pointer-events-auto")}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Due Date</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="w-full justify-start text-left font-normal">
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {filters.dueDate ? format(filters.dueDate, 'MMM dd, yyyy') : 'All dates'}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={filters.dueDate}
+                      onSelect={(date) => setFilters({...filters, dueDate: date})}
+                      initialFocus
+                      className={cn("p-3 pointer-events-auto")}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+          </div>
+        )}
         {/* Mass Update Controls */}
         {selectedWorkOrders.size > 0 && (
           <div className="mb-6 p-4 border border-border rounded-lg bg-accent/50">
@@ -211,7 +437,7 @@ export function WorkOrdersTable() {
               <tr className="border-b">
                 <th className="text-center p-3 w-12">
                   <Checkbox
-                    checked={selectedWorkOrders.size === workOrders.length && workOrders.length > 0}
+                    checked={selectedWorkOrders.size === filteredWorkOrders.length && filteredWorkOrders.length > 0}
                     onCheckedChange={handleSelectAll}
                     aria-label="Select all work orders"
                   />
@@ -231,7 +457,7 @@ export function WorkOrdersTable() {
               </tr>
             </thead>
             <tbody>
-              {workOrders.map((workOrder) => {
+              {filteredWorkOrders.map((workOrder) => {
                 const isEditing = editingRow === workOrder.id;
                 const estimatedCompletion = getEstimatedCompletion(workOrder.id);
                 

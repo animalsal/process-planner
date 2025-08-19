@@ -5,6 +5,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { Calendar, CalendarDays, Clock, TrendingUp, TrendingDown } from 'lucide-react';
 import { DailySchedule } from '@/hooks/useScheduling';
 import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
 
 interface CalendarViewProps {
   dailySchedules: DailySchedule[];
@@ -12,6 +13,11 @@ interface CalendarViewProps {
 
 export function CalendarView({ dailySchedules }: CalendarViewProps) {
   const [selectedMonth, setSelectedMonth] = useState(new Date());
+  const navigate = useNavigate();
+
+  const handleDayClick = (daySchedule: DailySchedule) => {
+    navigate(`/work-orders?scheduledDate=${daySchedule.date}`);
+  };
 
   // Get current month's days
   const currentMonthSchedules = dailySchedules.filter(schedule => {
@@ -134,10 +140,13 @@ export function CalendarView({ dailySchedules }: CalendarViewProps) {
                   {daySchedule ? (
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <div className={cn(
-                          "w-full h-full p-1 rounded-lg border-2 border-transparent hover:border-primary cursor-pointer transition-colors flex flex-col justify-between",
-                          getUtilizationColor(daySchedule.variance, daySchedule.scheduledHours)
-                        )}>
+                        <div 
+                          className={cn(
+                            "w-full h-full p-1 rounded-lg border-2 border-transparent hover:border-primary cursor-pointer transition-colors flex flex-col justify-between",
+                            getUtilizationColor(daySchedule.variance, daySchedule.scheduledHours)
+                          )}
+                          onClick={() => handleDayClick(daySchedule)}
+                        >
                           <div className="text-sm font-medium text-white">
                             {getDayOfMonth(daySchedule.date)}
                           </div>
