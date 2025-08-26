@@ -309,44 +309,68 @@ export function WorkOrdersTable() {
 
               <div>
                 <label className="text-sm font-medium mb-2 block">Scheduled Date</label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start text-left font-normal">
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {filters.scheduledDate ? format(filters.scheduledDate, 'MMM dd, yyyy') : 'All dates'}
+                <div className="flex gap-2">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="flex-1 justify-start text-left font-normal">
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {filters.scheduledDate ? format(filters.scheduledDate, 'MMM dd, yyyy') : 'All dates'}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={filters.scheduledDate}
+                        onSelect={(date) => setFilters({...filters, scheduledDate: date})}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  {filters.scheduledDate && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setFilters({...filters, scheduledDate: undefined})}
+                      className="px-2"
+                    >
+                      <X className="h-4 w-4" />
                     </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={filters.scheduledDate}
-                      onSelect={(date) => setFilters({...filters, scheduledDate: date})}
-                      initialFocus
-                      className={cn("p-3 pointer-events-auto")}
-                    />
-                  </PopoverContent>
-                </Popover>
+                  )}
+                </div>
               </div>
 
               <div>
                 <label className="text-sm font-medium mb-2 block">Due Date</label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start text-left font-normal">
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {filters.dueDate ? format(filters.dueDate, 'MMM dd, yyyy') : 'All dates'}
+                <div className="flex gap-2">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="flex-1 justify-start text-left font-normal">
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {filters.dueDate ? format(filters.dueDate, 'MMM dd, yyyy') : 'All dates'}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={filters.dueDate}
+                        onSelect={(date) => setFilters({...filters, dueDate: date})}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  {filters.dueDate && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setFilters({...filters, dueDate: undefined})}
+                      className="px-2"
+                    >
+                      <X className="h-4 w-4" />
                     </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={filters.dueDate}
-                      onSelect={(date) => setFilters({...filters, dueDate: date})}
-                      initialFocus
-                      className={cn("p-3 pointer-events-auto")}
-                    />
-                  </PopoverContent>
-                </Popover>
+                  )}
+                </div>
               </div>
             </div>
           </div>
