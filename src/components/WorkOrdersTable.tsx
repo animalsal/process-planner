@@ -70,20 +70,40 @@ export function WorkOrdersTable() {
       }
       if ((filters.scheduledDateRange.from || filters.scheduledDateRange.to) && workOrder.scheduledDate) {
         const workOrderDate = new Date(workOrder.scheduledDate);
-        if (filters.scheduledDateRange.from && workOrderDate < filters.scheduledDateRange.from) {
-          return false;
+        workOrderDate.setHours(0, 0, 0, 0); // Normalize to start of day
+        
+        if (filters.scheduledDateRange.from) {
+          const fromDate = new Date(filters.scheduledDateRange.from);
+          fromDate.setHours(0, 0, 0, 0);
+          if (workOrderDate < fromDate) {
+            return false;
+          }
         }
-        if (filters.scheduledDateRange.to && workOrderDate > filters.scheduledDateRange.to) {
-          return false;
+        if (filters.scheduledDateRange.to) {
+          const toDate = new Date(filters.scheduledDateRange.to);
+          toDate.setHours(23, 59, 59, 999); // Set to end of day to include the entire end date
+          if (workOrderDate > toDate) {
+            return false;
+          }
         }
       }
       if ((filters.dueDateRange.from || filters.dueDateRange.to) && workOrder.dueDate) {
         const workOrderDate = new Date(workOrder.dueDate);
-        if (filters.dueDateRange.from && workOrderDate < filters.dueDateRange.from) {
-          return false;
+        workOrderDate.setHours(0, 0, 0, 0); // Normalize to start of day
+        
+        if (filters.dueDateRange.from) {
+          const fromDate = new Date(filters.dueDateRange.from);
+          fromDate.setHours(0, 0, 0, 0);
+          if (workOrderDate < fromDate) {
+            return false;
+          }
         }
-        if (filters.dueDateRange.to && workOrderDate > filters.dueDateRange.to) {
-          return false;
+        if (filters.dueDateRange.to) {
+          const toDate = new Date(filters.dueDateRange.to);
+          toDate.setHours(23, 59, 59, 999); // Set to end of day to include the entire end date
+          if (workOrderDate > toDate) {
+            return false;
+          }
         }
       }
       return true;
