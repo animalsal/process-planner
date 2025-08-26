@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Calendar, ClipboardList, BarChart3 } from 'lucide-react';
+import { Calendar, ClipboardList, BarChart3, Brain } from 'lucide-react';
 
 export function Navigation() {
   const location = useLocation();
@@ -15,6 +15,11 @@ export function Navigation() {
       path: '/work-orders',
       label: 'Work Orders',
       icon: ClipboardList,
+    },
+    {
+      path: '/optimization',
+      label: 'Optimization',
+      icon: Brain,
     },
   ];
 
