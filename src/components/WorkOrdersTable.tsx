@@ -31,8 +31,8 @@ export function WorkOrdersTable() {
     priority: '',
     status: '',
     contracted: '',
-    scheduledDate: undefined as Date | undefined,
-    dueDate: undefined as Date | undefined
+    scheduledDateRange: { from: undefined, to: undefined } as { from: Date | undefined; to: Date | undefined },
+    dueDateRange: { from: undefined, to: undefined } as { from: Date | undefined; to: Date | undefined }
   });
 
   // Initialize filters from URL params
@@ -41,7 +41,7 @@ export function WorkOrdersTable() {
     if (scheduledDateParam) {
       setFilters(prev => ({
         ...prev,
-        scheduledDate: new Date(scheduledDateParam)
+        scheduledDateRange: { from: new Date(scheduledDateParam), to: new Date(scheduledDateParam) }
       }));
       setShowFilters(true);
     }
@@ -68,17 +68,21 @@ export function WorkOrdersTable() {
       if (filters.contracted && ((filters.contracted === 'yes' && workOrder.workType !== 'contractual') || (filters.contracted === 'no' && workOrder.workType !== 'non-contract'))) {
         return false;
       }
-      if (filters.scheduledDate && workOrder.scheduledDate) {
-        const workOrderDate = new Date(workOrder.scheduledDate).toISOString().split('T')[0];
-        const filterDate = filters.scheduledDate.toISOString().split('T')[0];
-        if (workOrderDate !== filterDate) {
+      if ((filters.scheduledDateRange.from || filters.scheduledDateRange.to) && workOrder.scheduledDate) {
+        const workOrderDate = new Date(workOrder.scheduledDate);
+        if (filters.scheduledDateRange.from && workOrderDate < filters.scheduledDateRange.from) {
+          return false;
+        }
+        if (filters.scheduledDateRange.to && workOrderDate > filters.scheduledDateRange.to) {
           return false;
         }
       }
-      if (filters.dueDate && workOrder.dueDate) {
-        const workOrderDate = new Date(workOrder.dueDate).toISOString().split('T')[0];
-        const filterDate = filters.dueDate.toISOString().split('T')[0];
-        if (workOrderDate !== filterDate) {
+      if ((filters.dueDateRange.from || filters.dueDateRange.to) && workOrder.dueDate) {
+        const workOrderDate = new Date(workOrder.dueDate);
+        if (filters.dueDateRange.from && workOrderDate < filters.dueDateRange.from) {
+          return false;
+        }
+        if (filters.dueDateRange.to && workOrderDate > filters.dueDateRange.to) {
           return false;
         }
       }
@@ -94,8 +98,8 @@ export function WorkOrdersTable() {
       priority: '',
       status: '',
       contracted: '',
-      scheduledDate: undefined,
-      dueDate: undefined
+      scheduledDateRange: { from: undefined, to: undefined },
+      dueDateRange: { from: undefined, to: undefined }
     });
     setSearchParams({});
   };
@@ -308,30 +312,37 @@ export function WorkOrdersTable() {
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Scheduled Date</label>
+                <label className="text-sm font-medium mb-2 block">Scheduled Date Range</label>
                 <div className="flex gap-2">
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button variant="outline" className="flex-1 justify-start text-left font-normal">
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {filters.scheduledDate ? format(filters.scheduledDate, 'MMM dd, yyyy') : 'All dates'}
+                        {filters.scheduledDateRange.from ? (
+                          filters.scheduledDateRange.to ? (
+                            `${format(filters.scheduledDateRange.from, 'MMM dd')} - ${format(filters.scheduledDateRange.to, 'MMM dd, yyyy')}`
+                          ) : (
+                            `From ${format(filters.scheduledDateRange.from, 'MMM dd, yyyy')}`
+                          )
+                        ) : 'All dates'}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
                       <Calendar
-                        mode="single"
-                        selected={filters.scheduledDate}
-                        onSelect={(date) => setFilters({...filters, scheduledDate: date})}
+                        mode="range"
+                        selected={filters.scheduledDateRange}
+                        onSelect={(range) => setFilters({...filters, scheduledDateRange: range ? { from: range.from, to: range.to } : { from: undefined, to: undefined }})}
                         initialFocus
                         className={cn("p-3 pointer-events-auto")}
+                        numberOfMonths={2}
                       />
                     </PopoverContent>
                   </Popover>
-                  {filters.scheduledDate && (
+                  {(filters.scheduledDateRange.from || filters.scheduledDateRange.to) && (
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setFilters({...filters, scheduledDate: undefined})}
+                      onClick={() => setFilters({...filters, scheduledDateRange: { from: undefined, to: undefined }})}
                       className="px-2"
                     >
                       <X className="h-4 w-4" />
@@ -341,30 +352,37 @@ export function WorkOrdersTable() {
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Due Date</label>
+                <label className="text-sm font-medium mb-2 block">Due Date Range</label>
                 <div className="flex gap-2">
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button variant="outline" className="flex-1 justify-start text-left font-normal">
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {filters.dueDate ? format(filters.dueDate, 'MMM dd, yyyy') : 'All dates'}
+                        {filters.dueDateRange.from ? (
+                          filters.dueDateRange.to ? (
+                            `${format(filters.dueDateRange.from, 'MMM dd')} - ${format(filters.dueDateRange.to, 'MMM dd, yyyy')}`
+                          ) : (
+                            `From ${format(filters.dueDateRange.from, 'MMM dd, yyyy')}`
+                          )
+                        ) : 'All dates'}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
                       <Calendar
-                        mode="single"
-                        selected={filters.dueDate}
-                        onSelect={(date) => setFilters({...filters, dueDate: date})}
+                        mode="range"
+                        selected={filters.dueDateRange}
+                        onSelect={(range) => setFilters({...filters, dueDateRange: range ? { from: range.from, to: range.to } : { from: undefined, to: undefined }})}
                         initialFocus
                         className={cn("p-3 pointer-events-auto")}
+                        numberOfMonths={2}
                       />
                     </PopoverContent>
                   </Popover>
-                  {filters.dueDate && (
+                  {(filters.dueDateRange.from || filters.dueDateRange.to) && (
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setFilters({...filters, dueDate: undefined})}
+                      onClick={() => setFilters({...filters, dueDateRange: { from: undefined, to: undefined }})}
                       className="px-2"
                     >
                       <X className="h-4 w-4" />
